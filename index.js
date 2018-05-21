@@ -21,11 +21,13 @@ const returnCustomColors = function(config) {
 // CHECKLIST
 //
 // Import colors -                ✔
-// Import custom colors -         ✘/✔
+// Import custom colors -         ✔
 // Import shades -                ✔
 // Import 'appearance'(radius) -  ✔ 
 // Import 'adv'(customCSS) -      ✔
 // Import 'adv'(fontFamily) -     ✔
+// Fix colors(box, etc) -         ✘/✔
+// Fix colors(hr, etc)            ✘
 
 exports.generate = (req, res) => {
   
@@ -118,10 +120,12 @@ exports.generate = (req, res) => {
       // $colors: map-merge($colors, $addColors);
       
       // Box
-      $box-background-color: $white-ter;
-      
+
+      ${(config.theme === "light") ? "$box-background-color: darken($background-color, 15%);" : "$box-background-color: lighten($background-color, 15%);"}
+
       // Card
-      $card-background-color: $white-ter;
+
+      ${(config.theme === "light") ? "$card-background-color: darken($background-color, 15%);" : "$card-background-color: lighten($background-color, 15%);"}
       
       // Import the rest of Bulma
       @import "./node_modules/bulma/bulma";
