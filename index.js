@@ -25,12 +25,23 @@ const returnCustomColors = function(config) {
 // Import shades -                ✔
 // Import 'appearance'(radius) -  ✔ 
 // Import 'adv'(customCSS) -      ✔
-// Import 'adv'(fontFamily) -     ✘/✔
+// Import 'adv'(fontFamily) -     ✔
 
 exports.generate = (req, res) => {
+  
+  res.header("Access-Control-Allow-Origin", "*")
+  res.header('Content-Type','application/json')
+  res.header("Access-Control-Allow-Methods", "GET, OPTIONS, POST")
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept")
+  
+  if (req.method === `OPTIONS`) {
+	res.status(204).send('')
+	   return;
+  }
+  
   if (req.body.name === undefined) {
-    // This is an error case, as "message" is required.
-    res.status(400).send('No config defined!')
+    // This is an error case, as "name" is required.
+    res.status(400).send("No config defined!")
   } else {
 
     try {
@@ -93,8 +104,8 @@ exports.generate = (req, res) => {
       $link-hover: lighten($primary-color, 15%);
       
       // Fonts
-      
-      $family-primary: "${config.adv.fontFamily}, " +  $family-sans-serif;
+
+      ${(config.adv.fontFamily !== "") ? `$custom-fonts: ${config.adv.fontFamily};$family-primary: #{$custom-fonts + ", " +  $family-sans-serif};` : ""}
       
       // Custom Colors
       
@@ -115,21 +126,20 @@ exports.generate = (req, res) => {
       // Import the rest of Bulma
       @import "./node_modules/bulma/bulma";
       
-      html {
-        border-radius: $radius;
-      }
       ${config.adv.customCSS}
       `
 
       var result = sass.renderSync({
         // file: './node_modules/bulma/bulma.sass',
         data: sassBody,
-        outputStyle: 'compressed'
+        outputStyle: "compressed"
       })
-
+	  // res.setHeader('Content-disposition', 'attachment; filename=style.css');
+    //   res.setHeader('Content-type', 'text/plain');
+    //   res.charset = 'UTF-8';
       res.status(200).send(result.css.toString())
     } catch (e) {
-      return res.status(400).send('Error in config' + e)
+      return res.status(400).send("Error in config" + e)
     }
   }
 }
